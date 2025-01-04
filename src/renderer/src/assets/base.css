@@ -1,0 +1,27 @@
+/* Ensure Tailwind CSS is installed and configured correctly */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+@font-face {
+  font-family: "Anta";
+  src: url("./fonts/Anta-Regular.ttf") format('TrueType');  
+}
+
+@layer base {
+  #root {
+    @apply h-full;
+  }
+
+  html, body{
+    @apply h-full;
+
+    @apply select-none;
+
+    @apply bg-black;
+
+    @apply font-mono antialiased text-white;
+
+    @apply overflow-hidden;
+  }
+}
