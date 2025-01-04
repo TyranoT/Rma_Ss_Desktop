@@ -35,7 +35,6 @@ function createWindow(): void {
   }
 }
 
-
 app.whenReady().then(() => {
 
   electronApp.setAppUserModelId('com.electron')
@@ -46,6 +45,8 @@ app.whenReady().then(() => {
   })
 
   createWindow()
+  
+  console.log(import.meta.env.MAIN_VITE_DATABASE_URL);
 
   app.on('activate', function () {
 
