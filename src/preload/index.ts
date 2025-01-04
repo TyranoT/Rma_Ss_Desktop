@@ -1,6 +1,6 @@
-import { contextBridge } from "electron"
+import { contextBridge } from 'electron'
 
-if(!process.contextIsolated){
+if (!process.contextIsolated) {
   throw new Error('O script de preload não está isolado por contexto')
 }
 
