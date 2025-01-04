@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User_Aux_CC {
+  id            String        @id
+  id_user       String
+  id_cc         String
+  centros_custo centros_custo @relation(fields: [id_cc], references: [codigo])
+  user          user          @relation(fields: [id_user], references: [id], onDelete: Cascade)
+}
+
+model categoria {
+  id             String    @id
+  nome_Categoria String
+  insumos        insumos[]
+}
+
+model centros_custo {
+  codigo      String        @id
+  nome        String
+  User_Aux_CC User_Aux_CC[]
+  insumos     insumos[]
+  rma         rma[]
+  ss          ss[]
+}
+
+model cotacoes {
+  id                  Int       @id @default(autoincrement())
+  id_item_rma         Int?
+  id_item_ss          Int?
+  valor_unit          Float
+  valor_total         Float
+  fornecedor          String
+  escolhida           Boolean
+  porc_desconto       Float
+  prazo_entrega       DateTime
+  condicoes_pagamento String
+  item_rma            item_rma? @relation(fields: [id_item_rma], references: [id])
+  item_ss             item_ss?  @relation(fields: [id_item_ss], references: [id])
+}
+
+model insumos {
+  descricao            String
+  unidade              String
+  codigo               String        @id
+  codigo_centro_custos String
+  id_categoria         String?
+  centros_custo        centros_custo @relation(fields: [codigo_centro_custos], references: [codigo])
+  categoria            categoria?    @relation(fields: [id_categoria], references: [id])
+}
+
+model intermediacoes {
+  id                  Int      @id @default(autoincrement())
+  id_funcionario      String
+  data_intermediacao  DateTime @default(now())
+  observacoes         String?
+  status              String
+  numero_rma          String?
+  numero_ss           String?
+  motivo_reprovadacao String?
+  user                user     @relation(fields: [id_funcionario], references: [id])
+  rma                 rma?     @relation(fields: [numero_rma], references: [numero_rma])
+  ss                  ss?      @relation(fields: [numero_ss], references: [numero_ss])
+}
+
+model item_rma {
+  id         Int        @id @default(autoincrement())
+  descricao  String
+  unidade    String
+  quantidade Float
+  item_eap   String?
+  numero_rma String
+  estrutura  String?
+  categoria  String?
+  is_outro   Boolean
+  cotacoes   cotacoes[]
+  rma        rma        @relation(fields: [numero_rma], references: [numero_rma])
+}
+
+model item_ss {
+  id         Int        @id @default(autoincrement())
+  descricao  String
+  unidade    String
+  quantidade Float
+  item_eap   String?
+  numero_ss  String
+  estrutura  String?
+  categoria  String?
+  is_outro   Boolean
+  cotacoes   cotacoes[]
+  ss         ss         @relation(fields: [numero_ss], references: [numero_ss])
+}
+
+model log_geral {
+  id          String   @id
+  data_acao   DateTime @default(now())
+  acao        String
+  cidade      String?
+  estado      String?
+  localizacao String?
+  email_user  String
+  user        user     @relation(fields: [email_user], references: [email])
+}
+
+model rma {
+  numero_rma           String           @id
+  descricao            String
+  classificacao        String?
+  data_aplicacao       DateTime?
+  data_emissao         DateTime         @default(now())
+  boletim_medicao      String?
+  observacoes          String?
+  centro_custos_codigo String
+  created_by           String?
+  intermediacoes       intermediacoes[]
+  item_rma             item_rma[]
+  centros_custo        centros_custo    @relation(fields: [centro_custos_codigo], references: [codigo])
+}
+
+model ss {
+  numero_ss            String           @id
+  descricao            String
+  classificacao        String?
+  data_emissao         DateTime         @default(now())
+  boletim_medicao      String?
+  observacoes          String?
+  centro_custos_codigo String
+  data_fim             DateTime?
+  data_inicio          DateTime
+  especificacao        String?
+  itensInEx            String?
+  justificativa        String?
+  created_by           String?
+  intermediacoes       intermediacoes[]
+  item_ss              item_ss[]
+  centros_custo        centros_custo    @relation(fields: [centro_custos_codigo], references: [codigo])
+}
+
+model user {
+  id             String           @id
+  name           String
+  email          String           @unique
+  hashPassword   String
+  role           String
+  User_Aux_CC    User_Aux_CC[]
+  intermediacoes intermediacoes[]
+  log_geral      log_geral[]
+}

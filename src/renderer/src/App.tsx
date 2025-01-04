@@ -6,6 +6,9 @@ import Swal from "sweetalert2";
 import { useState } from "react";
 import { Button, Input, Checkbox } from "@nextui-org/react";
 import LogoWithTextAnimation from "./components/logoWithTextAnimation";
+import { sign } from "crypto";
+import { electronAPI } from "@electron-toolkit/preload";
+import { user } from "@prisma/client";
 
 const SignInZod = z.object({
   email: z.string().email(),
@@ -28,10 +31,23 @@ export default function App() {
 
   const OnSubmit = async (data: SignInZodType) => {
     setCarregando(true);
-
-    console.log(data);
-
-    setCarregando(false);
+    try {
+      const {token, user}: {token: string, user: user} = await window.electron.login(data.email, data.senha);
+      if(token){
+        Swal.fire({
+          title: "Sucesso",
+          icon: "success",
+        })
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Erro",
+        text: `${error}`,
+        icon: "error",
+      });
+    } finally {
+      setCarregando(false);
+    }
   };
   return (
     <main className="flex flex-col min-h-screen items-center justify-center bg-gradient-radial from-zinc-800/50 via-black to-black">

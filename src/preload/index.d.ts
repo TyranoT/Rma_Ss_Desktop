@@ -1,8 +1,13 @@
-import { ElectronAPI } from '@electron-toolkit/preload'
+import { ElectronAPI } from '@electron-toolkit/preload';
+
+interface CustomElectronAPI extends ElectronAPI {
+  login: (email: string, password: string) => Promise<any>;
+  verificacao_token: (token: string) => Promise<any>;
+}
 
 declare global {
   interface Window {
-    //electron: ElectronAPI
-    context: {}
+    electron: CustomElectronAPI;
+    context: {};
   }
 }
